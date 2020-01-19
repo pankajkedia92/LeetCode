@@ -1,67 +1,74 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
 class Solution {
-    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-
-        if(beginWord==null||endWord==null||endWord.length()!=beginWord.length()){
-            return 0;
-        }
-
-        int len=endWord.length();
-
-        Set<String> set=new HashSet<>();
-
-        for(String word:wordList){
-            if(word.length()==len)
-                set.add(word);
-        }
-
-        set.remove(beginWord);
-
-        class Details{
-            String beginWord;
-            int index;
-            int count;
-            public Details(String beginWord,
-                int index,
-               int count){
-                this.beginWord=beginWord;
-                this.index=index;
-                this.count=count;
-            }
-        }
-
-        Queue<Details> queue=new LinkedList<>();
-        queue.add(new Details(beginWord,0,0));
-        Map<String,Boolean> map=new HashMap<>();
-        while (!queue.isEmpty()){
-            Details details=queue.remove();
-
-            if(details.beginWord.equals(endWord)){
-                return details.count+1;
-            }
-
-            if(details.index==beginWord.length()){
-                continue;
-            }
-
-            for(int i=97;i<=122;i++){
-                if((int)details.beginWord.charAt(details.index)==i){
-                    Details details1=new Details(details.beginWord,details.index+1,details.count);
-                    queue.add(details1);
-                    continue;
-                }
-
-                char beingWordChars[]=details.beginWord.toCharArray();
-                beingWordChars[details.index]=(char)i;
-                String word=new String(beingWordChars);
-                if(set.contains(word)&&!map.containsKey(word)){
-                    map.put(word,true);
-                    Details details1=new Details(word,0,details.count+1);
-                    queue.add(details1);
-                }
-            }
-
-
-        }
-
-        return 0;
+    class Pair{
+     TreeNode root;
+     int heightX;
+     int heightY;
+     public Pair(TreeNode root,int heightX,int heightY){
+       this.root=root;
+       this.heightX=heightX;
+       this.heightY=heightY;
+     }
     }
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+         List<List<Integer>>  result=new ArrayList<>();
+
+         if(root==null)
+          return result;
+
+         Map<Integer, List<Pair>> map=new HashMap<>();
+         int min=0;
+         int max=0;
+
+         Queue<Pair> queue=new LinkedList<>();
+         queue.add(new Pair(root,0,0));
+         while(!queue.isEmpty()){
+           Pair current=queue.remove();
+           List<Pair> list=map.get(current.heightX);
+           if(list==null){
+             list=new ArrayList<>();
+             map.put(current.heightX,list);
+             min=Math.min(min,current.heightX);
+             max=Math.max(max,current.heightX);
+           }
+           list.add(current);
+
+           if(current.root.left!=null){
+        queue.add(new Pair(current.root.left,current.heightX-1,current.heightY-1));
+           }
+
+            if(current.root.right!=null){
+        queue.add(new Pair(current.root.right,current.heightX+1,current.heightY-1));
+           }
+
+
+         }
+
+         for(int i=min;i<=max;i++){
+           List<Pair> list=map.get(i);
+          Collections.sort(list,(a,b)->{
+
+            int diff=-a.heightY+b.heightY;
+            if(diff==0){
+              return a.root.val-b.root.val;
+            }
+            return diff;
+          });
+
+           List<Integer> r=new ArrayList<>();
+           for(Pair p:list){
+             r.add(p.root.val);
+           }
+           result.add(r);
+         }
+         return result;
+    }
+}
