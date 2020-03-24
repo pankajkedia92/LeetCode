@@ -1,4 +1,4 @@
 # LeetCode
 
 My Profie : https://leetcode.com/pkedia/
-I've sloved around 200+ questions and I will post them here.
+I've sloved around 300+ questions and I will post them here.
